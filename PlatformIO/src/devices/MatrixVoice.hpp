@@ -90,23 +90,23 @@ void MatrixVoice::updateColors(int colors) {
   // copy color value array based on colors parameter for further processing
   int color_values[4];
   switch (colors) {
-  case COLORS_HOTWORD:
-    std::copy(std::begin(hotword_colors), std::end(hotword_colors), std::begin(color_values));
-    break;
-  case COLORS_WIFI_CONNECTED:
-    std::copy(std::begin(wifi_conn_colors), std::end(wifi_conn_colors), std::begin(color_values));
-    break;
-  case COLORS_IDLE:
-    std::copy(std::begin(idle_colors), std::end(idle_colors), std::begin(color_values));
-    break;
-  case COLORS_WIFI_DISCONNECTED:
-    std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
-    break;
-  case COLORS_OTA:
-    std::copy(std::begin(ota_colors), std::end(ota_colors), std::begin(color_values));
-    break;
-  default:
-    std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
+    case COLORS_HOTWORD:
+      std::copy(std::begin(hotword_colors), std::end(hotword_colors), std::begin(color_values));
+      break;
+    case COLORS_WIFI_CONNECTED:
+      std::copy(std::begin(wifi_conn_colors), std::end(wifi_conn_colors), std::begin(color_values));
+      break;
+    case COLORS_IDLE:
+      std::copy(std::begin(idle_colors), std::end(idle_colors), std::begin(color_values));
+      break;
+    case COLORS_WIFI_DISCONNECTED:
+      std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
+      break;
+    case COLORS_OTA:
+      std::copy(std::begin(ota_colors), std::end(ota_colors), std::begin(color_values));
+      break;
+    default:
+      std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
   }
 
   // apply brightness and gamma correction to color values
