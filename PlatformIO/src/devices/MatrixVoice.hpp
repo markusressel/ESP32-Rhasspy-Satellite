@@ -86,56 +86,43 @@ void MatrixVoice::updateBrightness(int brightness) {
 }
 
 void MatrixVoice::updateColors(int colors) {
-	int r = 0;
-	int g = 0;
-	int b = 0;
-	int w = 0;	
-  switch (colors) {
-    case COLORS_HOTWORD:
-			r = hotword_colors[0];
-			g = hotword_colors[1];
-			b = hotword_colors[2];
-			w = hotword_colors[3];		
-    break;
-    case COLORS_WIFI_CONNECTED:
-			r = wifi_conn_colors[0];
-			g = wifi_conn_colors[1];
-			b = wifi_conn_colors[2];
-			w = wifi_conn_colors[3];		
-    break;
-    case COLORS_IDLE:
-			r = idle_colors[0];
-			g = idle_colors[1];
-			b = idle_colors[2];
-			w = idle_colors[3];		
-    break;
-    case COLORS_WIFI_DISCONNECTED:
-			r = wifi_disc_colors[0];
-			g = wifi_disc_colors[1];
-			b = wifi_disc_colors[2];
-			w = wifi_disc_colors[3];		
-    break;
-    case COLORS_OTA:
-			r = ota_colors[0];
-			g = ota_colors[1];
-			b = ota_colors[2];
-			w = ota_colors[3];		
-    break;
-  }
-	r = floor(MatrixVoice::brightness * r / 100);
-	r = pgm_read_byte(&gamma8[r]);
-	g = floor(MatrixVoice::brightness * g / 100);
-	g = pgm_read_byte(&gamma8[g]);
-	b = floor(MatrixVoice::brightness * b / 100);
-	b = pgm_read_byte(&gamma8[b]);
-	w = floor(MatrixVoice::brightness * w / 100);
-	w = pgm_read_byte(&gamma8[w]);
-	for (matrix_hal::LedValue &led : image1d.leds) {
-		led.red = r;
-		led.green = g;
-		led.blue = b;
-		led.white = w;
+
+	// copy color value array based on colors parameter for further processing
+	int color_values[4];
+	switch (colors) {
+	case COLORS_HOTWORD:
+		std::copy(std::begin(hotword_colors), std::end(hotword_colors), std::begin(color_values));
+		break;
+	case COLORS_WIFI_CONNECTED:
+		std::copy(std::begin(wifi_conn_colors), std::end(wifi_conn_colors), std::begin(color_values));
+		break;
+	case COLORS_IDLE:
+		std::copy(std::begin(idle_colors), std::end(idle_colors), std::begin(color_values));
+		break;
+	case COLORS_WIFI_DISCONNECTED:
+		std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
+		break;
+	case COLORS_OTA:
+		std::copy(std::begin(ota_colors), std::end(ota_colors), std::begin(color_values));
+		break;
+	default:
+		std::copy(std::begin(wifi_disc_colors), std::end(wifi_disc_colors), std::begin(color_values));
 	}
+
+	// apply brightness and gamma correction to color values
+	for (int i = 0; i < sizeof(color_values)/sizeof(int); ++i) {
+        color_values[i] = floor(MatrixVoice::brightness * color_values[i] / 100);
+		color_values[i] = pgm_read_byte(&gamma8[color_values[i]]);
+    }
+
+	// create an image from the color values
+	for (matrix_hal::LedValue &led : image1d.leds) {
+		led.red = color_values[0];
+		led.green = color_values[1];
+		led.blue = color_values[2];
+		led.white = color_values[3];
+	}
+	// apply the image to the hardware
 	everloop.Write(&image1d);
 }
 
